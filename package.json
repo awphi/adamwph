@@ -1,0 +1,24 @@
+{
+  "name": "adamwph",
+  "version": "1.0.0",
+  "description": "Personal portfolio page",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "dev": "npm run serve",
+    "serve": "concurrently \"cd ./functions && npm run serve\" \"cd ./client && npm run serve\"",
+    "deploy": "firebase deploy --only hosting,functions"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awphi/adamwph.git"
+  },
+  "author": "awphi",
+  "bugs": {
+    "url": "https://github.com/awphi/adamwph/issues"
+  },
+  "homepage": "https://github.com/awphi/adamwph#readme",
+  "devDependencies": {
+    "concurrently": "^5.2.0"
+  }
+}

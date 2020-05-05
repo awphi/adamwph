@@ -1,0 +1,37 @@
+{
+  "name": "adamwph-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "rm -rf ./dist && set NODE_ENV=dev && vue-cli-service serve",
+    "build": "set NODE_ENV=production&& vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "firebase": "^7.14.2",
+    "is-touch-device": "^1.0.1",
+    "vue": "^2.6.11",
+    "vue-responsive": "^1.1.0",
+    "vue-router": "^3.1.6"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-plugin-router": "~4.3.0",
+    "@vue/cli-service": "~4.3.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "lint-staged": "^9.5.0",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,vue}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  }
+}
