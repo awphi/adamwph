@@ -5,6 +5,7 @@
     @focus="commandFocused = true"
     @blur="commandFocused = false"
     @keydown="commandKeyDown"
+    ref="console"
   >
     <div class="console-bar unselectable">
       <h3 class="console-bar-text">guest - bash</h3>
@@ -15,36 +16,39 @@
       </div>
     </div>
     <div class="console-body" ref="consoleBody">
-      <p class="line" v-for="item in lines" :key="item.index">
-        {{ item }}
-      </p>
+      <div class="line" v-for="item in lines" :key="item.index">
+        <p class="command line">
+          <span class="command-title">adamw.ph:$ </span>{{ item.command }}
+        </p>
+        <p class="line">{{ item.out }}</p>
+      </div>
       <!-- prettier-ignore -->
-      <p id="command" class="line" ref="command"><span id="command-title">adamw.ph:$ </span>{{ command }}<span id="underscore" v-if="commandFocused">_</span></p>
+      <p class="command active line"><span class="command-title">adamw.ph:$ </span>{{ command }}<span id="underscore" v-if="commandFocused">_</span></p>
     </div>
   </div>
 </template>
 
 <script>
+import Commands from "@/assets/commands.js";
+
 export default {
   name: "Console",
   data: function () {
     return {
       command: "",
-      commandFocused: true,
-      lines: [
-        "line1",
-        "LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG",
-      ],
+      commandFocused: false,
+      lines: [],
     };
   },
   methods: {
-    addLine: function (l) {
-      this.lines.push(l);
+    addLine: function (c, l) {
+      this.lines.push({ command: c, out: l });
       console.log(this.$refs.scrollHeight);
       this.$refs.consoleBody.scrollTo(0, this.$refs.consoleBody.scrollHeight);
     },
     sendCommand: function () {
-      this.addLine(this.command);
+      var out = Commands.execute(this.command);
+      this.addLine(this.command, out);
       this.command = "";
     },
     commandKeyDown: function (e) {
@@ -56,13 +60,12 @@ export default {
         this.command += e.key;
       }
     },
-    focusCommand: function () {
-      console.log("ff");
-      this.$refs.command.focus();
+    focusConsole: function () {
+      this.$refs.console.focus();
     },
   },
   mounted() {
-    this.focusCommand();
+    this.focusConsole();
   },
 };
 </script>
@@ -148,13 +151,16 @@ p {
   word-break: break-all;
 }
 
-#command-title {
+.command-title {
   color: var(--cl-text-white);
 }
 
-#command {
-  color: var(--cl-text-green);
+.command.active {
   caret-color: transparent;
+}
+
+.command {
+  color: var(--cl-text-green);
 }
 
 #underscore {

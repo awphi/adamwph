@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "memfs": "^3.2.2",
+    "normalize-path": "^3.0.0",
     "vue": "^2.6.11",
     "vue-responsive": "^1.1.0"
   },

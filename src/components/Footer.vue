@@ -15,10 +15,6 @@
         class="social-ico"
         style="width: 50px; height: 50px; background-color: red"
       />
-      <div
-        class="social-ico"
-        style="width: 50px; height: 50px; background-color: red"
-      />
     </div>
   </div>
 </template>
