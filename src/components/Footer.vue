@@ -9,15 +9,37 @@
     <div class="socials-box">
       <div
         class="social-ico"
-        style="width: 50px; height: 50px; background-color: red"
-      />
+        @click="socialClick"
+        link="https://www.linkedin.com/in/adam-hodson-a77275197/"
+      >
+        <LinkedinIcon />
+      </div>
       <div
+        @click="socialClick"
+        link="https://github.com/awphi"
         class="social-ico"
-        style="width: 50px; height: 50px; background-color: red"
-      />
+      >
+        <GithubIcon id="git-icon" />
+      </div>
     </div>
   </div>
 </template>
+
+<script>
+import { GithubIcon, LinkedinIcon } from "vue-feather-icons";
+export default {
+  name: "Footer",
+  components: {
+    GithubIcon,
+    LinkedinIcon,
+  },
+  methods: {
+    socialClick(e) {
+      window.open(e.currentTarget.getAttribute("link"));
+    },
+  },
+};
+</script>
 
 <style scoped>
 .footer {
@@ -29,6 +51,27 @@
 
 .social-ico {
   margin: 0 0.25rem 0 0.25rem;
+  border-radius: 20rem;
+  background-color: #6f6f6f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.2rem;
+  height: 4.2rem;
+}
+
+.social-ico:hover {
+  background-color: #5b5b5b;
+}
+
+#git-icon {
+  transform: translate(0px, 2px);
+}
+
+svg {
+  width: 60%;
+  height: 60%;
+  color: var(--cl-bg-grey);
 }
 
 .socials-box {

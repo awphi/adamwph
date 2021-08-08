@@ -17,10 +17,10 @@
     </div>
     <div class="console-body" ref="consoleBody">
       <div class="line" v-for="item in lines" :key="item.index">
-        <p class="command line">
+        <p v-if="item.command != null" class="command line">
           <span class="command-title">adamw.ph:$ </span>{{ item.command }}
         </p>
-        <p class="line">{{ item.out }}</p>
+        <p v-for="out in item.out" :key="out.index" class="line">{{ out }}</p>
       </div>
       <!-- prettier-ignore -->
       <p class="command active line"><span class="command-title">adamw.ph:$ </span>{{ command }}<span id="underscore" v-if="commandFocused">_</span></p>
@@ -37,14 +37,22 @@ export default {
     return {
       command: "",
       commandFocused: false,
-      lines: [],
+      lines: [
+        {
+          command: null,
+          out: [
+            "Welcome to 'adamw.ph' online CLI! Try executing 'help' to get started.",
+          ],
+        },
+      ],
     };
   },
   methods: {
     addLine: function (c, l) {
+      if (typeof l === "string") {
+        l = [l];
+      }
       this.lines.push({ command: c, out: l });
-      console.log(this.$refs.scrollHeight);
-      this.$refs.consoleBody.scrollTo(0, this.$refs.consoleBody.scrollHeight);
     },
     sendCommand: function () {
       var out = Commands.execute(this.command);
@@ -66,6 +74,9 @@ export default {
   },
   mounted() {
     this.focusConsole();
+  },
+  updated() {
+    this.$refs.consoleBody.scrollTo(0, this.$refs.consoleBody.scrollHeight);
   },
 };
 </script>
@@ -135,11 +146,22 @@ h3 {
 
 .console-body {
   width: max(60vw, 360px);
-  min-height: max(30vw, 200px);
+  height: max(30vw, 200px);
   background-color: #171717;
   border-radius: 0 0 0.5rem 0.5rem;
   padding: 0.15rem 0.5rem 0.25rem 0.5rem;
   overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 20rem;
+  background-color: rgba(0, 0, 0, 0.25);
 }
 
 p {
