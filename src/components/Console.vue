@@ -16,6 +16,7 @@
       </div>
     </div>
     <div class="console-body" ref="consoleBody">
+      <input type="text" id="hidden-input" ref="hiddenInput" />
       <div class="line" v-for="item in lines" :key="item.index">
         <p v-if="item.command != null" class="command line">
           <span class="command-title">adamw.ph:$ </span>{{ item.command }}
@@ -23,7 +24,10 @@
         <p v-for="out in item.out" :key="out.index" class="line">{{ out }}</p>
       </div>
       <!-- prettier-ignore -->
-      <p class="command active line"><span class="command-title">adamw.ph:$ </span>{{ command }}<span id="underscore" v-if="commandFocused">_</span></p>
+      <p class="command active line">
+        <span class="command-title">adamw.ph:$ </span>{{ command
+        }}<span id="underscore" v-if="commandFocused">_</span>
+      </p>
     </div>
   </div>
 </template>
@@ -69,7 +73,8 @@ export default {
       }
     },
     focusConsole: function () {
-      this.$refs.console.focus();
+      this.$refs.hiddenInput.focus();
+      //this.$refs.console.focus();
     },
   },
   mounted() {
@@ -86,6 +91,10 @@ h3 {
   margin-bottom: 0.1rem;
   font-size: 1.4rem;
   color: var(--cl-header-grey);
+}
+
+#hidden-input {
+  display: none;
 }
 
 .console-root {
@@ -108,6 +117,7 @@ h3 {
   display: flex;
   align-items: center;
   text-align: center;
+  position: relative;
 }
 
 .console-bar-btn[color="green"] {
