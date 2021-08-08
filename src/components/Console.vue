@@ -1,13 +1,6 @@
 <template>
-  <div
-    class="console-root"
-    tabindex="0"
-    @focus="commandFocused = true"
-    @blur="commandFocused = false"
-    @keydown="commandKeyDown"
-    ref="console"
-  >
-    <div class="console-bar unselectable">
+  <div class="console-root" tabindex="0" ref="console" @focus="focusConsole">
+    <div class="console-bar">
       <h3 class="console-bar-text">guest - bash</h3>
       <div class="console-bar-btn-box">
         <div class="console-bar-btn" color="green" />
@@ -16,17 +9,15 @@
       </div>
     </div>
     <div class="console-body" ref="consoleBody">
-      <input type="text" id="hidden-input" ref="hiddenInput" />
       <div class="line" v-for="item in lines" :key="item.index">
         <p v-if="item.command != null" class="command line">
-          <span class="command-title">adamw.ph:$ </span>{{ item.command }}
+          <span class="command-title">adamw.ph:$</span>{{ item.command }}
         </p>
         <p v-for="out in item.out" :key="out.index" class="line">{{ out }}</p>
       </div>
       <!-- prettier-ignore -->
-      <p class="command active line">
-        <span class="command-title">adamw.ph:$ </span>{{ command
-        }}<span id="underscore" v-if="commandFocused">_</span>
+      <p class="line">
+        <span class="command-title">adamw.ph:$</span><span @keyup="commandKeyUp" @keydown="commandKeyDown" class="command active" ref="command" spellcheck="false" contenteditable="true"></span>
       </p>
     </div>
   </div>
@@ -39,7 +30,6 @@ export default {
   name: "Console",
   data: function () {
     return {
-      command: "",
       commandFocused: false,
       lines: [
         {
@@ -58,23 +48,24 @@ export default {
       }
       this.lines.push({ command: c, out: l });
     },
-    sendCommand: function () {
-      var out = Commands.execute(this.command);
-      this.addLine(this.command, out);
-      this.command = "";
+    sendCommand: function (c) {
+      var out = Commands.execute(c);
+      Promise.resolve(out).then((v) => {
+        this.addLine(c, v);
+      });
     },
     commandKeyDown: function (e) {
       if (e.keyCode === 13) {
-        this.sendCommand();
-      } else if (e.keyCode === 8) {
-        this.command = this.command.slice(0, -1);
-      } else if (e.key.length === 1) {
-        this.command += e.key;
+        this.sendCommand(e.srcElement.textContent);
+        e.preventDefault();
+        e.srcElement.textContent = "";
       }
     },
+    commandKeyUp: function (e) {
+      this.command = e.srcElement.textContent;
+    },
     focusConsole: function () {
-      this.$refs.hiddenInput.focus();
-      //this.$refs.console.focus();
+      this.$refs.command.focus();
     },
   },
   mounted() {
@@ -94,7 +85,13 @@ h3 {
 }
 
 #hidden-input {
-  display: none;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+input {
+  font-size: 1.2rem;
 }
 
 .console-root {
@@ -180,22 +177,21 @@ p {
 }
 
 .line {
-  word-break: break-all;
+  white-space: pre-wrap;
+  outline: none;
 }
 
 .command-title {
   color: var(--cl-text-white);
-}
-
-.command.active {
-  caret-color: transparent;
+  margin-right: 0.5rem;
 }
 
 .command {
+  outline: none;
   color: var(--cl-text-green);
 }
 
-#underscore {
+.underscore {
   color: var(--cl-text-green);
   animation-name: blink;
   animation-iteration-count: infinite;

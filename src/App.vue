@@ -21,13 +21,6 @@ export default {
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap");
 
-.unselectable {
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+/Edge */
-  user-select: none; /* Standard */
-}
-
 html,
 body {
   height: 100%;
@@ -60,7 +53,8 @@ h1,
 h2,
 h3,
 p,
-a {
+a,
+input {
   font-family: "Roboto Mono", monospace;
   font-weight: normal;
   margin: 0;

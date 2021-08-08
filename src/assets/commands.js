@@ -27,18 +27,32 @@ process.chdir = function (dir) {
 
 process.chdir("/home/guest");
 
-// We register "executables" here to avoid file permissions (which is quite easy) and namely avoid using eval() because ACE is spooky
+fs.chmodSync("/home/guest/bitcoin_miner", 0o755);
+
 const Commands = {
-  // Maybe add aliases? not sure
   map: {
-    help: help,
-    man: help,
-    pwd: pwd,
-    ls: ls,
-    cat: cat,
-    bitcoin_miner: bitcoin_miner,
+    help: { cmd: help, desc: "Opens this help menu.", usage: "help" },
+    pwd: {
+      cmd: pwd,
+      desc: "Prints the current working directory.",
+      usage: "pwd",
+    },
+    ls: {
+      cmd: ls,
+      desc: "Lists files in the given directory.",
+      usage: "ls [options] <directory>",
+    },
+    cat: {
+      cmd: cat,
+      desc: "Very simple file reading utility.",
+      usage: "cat <file>",
+    },
+    git: {
+      cmd: git,
+      desc: "Explore my public projects on GitHub.",
+      usage: "git",
+    },
   },
-  failMessage: "Command not found! Try 'help' to see available commands.",
   execute: function (cmd) {
     var arr = cmd.split(" ");
 
@@ -50,26 +64,37 @@ const Commands = {
     ops = [...new Set(ops)];
 
     if (prog in this.map) {
-      return this.map[prog](ops);
+      return this.map[prog].cmd(ops);
     }
 
-    return this.failMessage;
+    if (fs.existsSync(prog)) {
+      var stat = fs.lstatSync(prog);
+      if (!stat.isDirectory() && stat.mode == 33261) {
+        var fn = fs.readFileSync(prog).toString();
+        var fnname = prog.split("/").splice(-1);
+
+        // AFAIK, even though eval is very dangerous, since this a client-side app only this *should* be a-okay
+        return eval(`${fn} ${fnname}(${JSON.stringify(ops)})`);
+      }
+    }
+
+    return `bash: ${prog}: command not found`;
   },
 };
 
-// Taken from top answer here https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
 function bitcoin_miner() {
+  // Taken from top answer here https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+  function makeid(length) {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
   return `${Math.floor(Math.random() * 5) + 1} BTC mined! Sent to ${makeid(
     32
   )}`;
@@ -94,7 +119,42 @@ function cat(ops) {
     return e + "is a directory";
   }
 
-  return fs.readFileSync(p).toString();
+  return fs.readFileSync(p).toString().split("\n");
+}
+
+function git() {
+  const url = "https://api.github.com/users/awphi/repos";
+  var x = fetch(url, {
+    method: "GET",
+  })
+    .then((res) => res.json())
+    .then((res) =>
+      res.map((v) => {
+        v.created_at = Date.parse(v.created_at);
+        return v;
+      })
+    )
+    .then((res) => {
+      console.log(res);
+      return res;
+    })
+    .then((vals) => {
+      return vals.sort(function (a, b) {
+        return a.created_at - b.created_at;
+      });
+    })
+    .then((vals) =>
+      vals.flatMap((o, idx) => [
+        `${idx + 1}) ${o.name}`,
+        `    Description: ${o.description}`,
+        `    Created: ${new Date(o.created_at).toDateString()}`,
+        `    Primary language: ${o.language}`,
+        " ",
+        " ",
+      ])
+    );
+
+  return x;
 }
 
 // Could do a whole fake file system for fun in the future but not super necessary for this quick site
@@ -145,7 +205,14 @@ function pwd() {
 }
 
 function help() {
-  return "HELP GOES HERE.";
+  var l = [];
+  for (var i in Commands.map) {
+    var o = Commands.map[i];
+    l.push(`${i} - ${o.desc}`);
+    l.push(`  Usage: ${o.usage}`);
+    l.push(" ");
+  }
+  return l;
 }
 
 export default Commands;
