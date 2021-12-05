@@ -54,7 +54,7 @@ const Commands = {
     },
   },
   execute: function (cmd) {
-    var arr = cmd.split(" ");
+    var arr = cmd.trim().split(" ");
 
     var prog = arr[0];
     prog = prog.replaceAll(/\.|\//g, "");
@@ -122,11 +122,19 @@ function cat(ops) {
   return fs.readFileSync(p).toString().split("\n");
 }
 
+function handleErrors(response) {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
+}
+
 function git() {
   const url = "https://api.github.com/users/awphi/repos";
   var x = fetch(url, {
     method: "GET",
   })
+    .then(handleErrors)
     .then((res) => res.json())
     .then((res) =>
       res.map((v) => {
@@ -152,7 +160,8 @@ function git() {
         " ",
         " ",
       ])
-    );
+    )
+    .catch((e) => `git: error when fetching: ${e}`);
 
   return x;
 }
