@@ -2,23 +2,15 @@
   <div class="footer">
     <h2 class="footer-text">
       <span id="name">Adam Hodson</span><br />
-      aspiring software engineer &amp;
-      <br />BSc ComSci student @ Durham University
+      Graduate Software Engineer
+      <br />ComSci Class of 2022 @ Durham University
     </h2>
 
     <div class="socials-box">
-      <div
-        class="social-ico"
-        @click="socialClick"
-        link="https://www.linkedin.com/in/adam-hodson-a77275197/"
-      >
+      <div class="social-ico" @click="socialClick" link="https://www.linkedin.com/in/adam-hodson-a77275197/">
         <LinkedinIcon />
       </div>
-      <div
-        @click="socialClick"
-        link="https://github.com/awphi"
-        class="social-ico"
-      >
+      <div @click="socialClick" link="https://github.com/awphi" class="social-ico">
         <GithubIcon id="git-icon" />
       </div>
     </div>
@@ -58,6 +50,7 @@ export default {
   justify-content: center;
   width: 4.2rem;
   height: 4.2rem;
+  cursor: pointer;
 }
 
 .social-ico:hover {
