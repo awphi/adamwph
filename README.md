@@ -1,4 +1,4 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/cd9b11b4-0a99-4315-be8f-97dd55fcddc9/deploy-status)](https://app.netlify.com/sites/infallible-swartz-e5bb2c/deploys)
+# THIS IS NOW DEPRECATED IN FAVOUR OF A MORE ADVANCED, FEATURE-RICH SITE: [https://adamw.ph](https://adamw.ph)
 
 # adamwph-client
 
